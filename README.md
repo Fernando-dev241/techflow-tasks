@@ -49,3 +49,24 @@ Acesse http://127.0.0.1:5000.
 pytest -v
 flake8
 ```
+
+## Gestão de Mudanças — Mudança de escopo #1: prioridade das tarefas
+
+**Solicitação do cliente (simulada):** após a primeira demonstração, a startup de logística
+informou que entregas urgentes estavam se perdendo no meio das demais tarefas e pediu uma forma
+de **priorizar tarefas críticas** no quadro.
+
+**Decisão:** incluir o campo **prioridade** (`Baixa`, `Média`, `Alta`, `Crítica`) nas tarefas,
+com filtro por prioridade e ordenação das mais urgentes primeiro.
+
+**Justificativa:**
+- Atende diretamente ao requisito original do cliente de *priorizar tarefas críticas*.
+- Baixo risco: é uma evolução do modelo existente, sem alterar o fluxo das colunas.
+- Valor imediato para o gestor e para a equipe, que passam a enxergar o que fazer primeiro.
+
+**Impacto no projeto:**
+- Novo card no Kanban: *[MUDANÇA DE ESCOPO] Adicionar prioridade às tarefas* (#11).
+- Código: modelo, validação, repositório, API e interface.
+- Testes: novos casos para validação, filtro e ordenação.
+- Documentação: diagramas UML e README atualizados.
+- Itens *fora do escopo* (login e banco de dados) permanecem no backlog para não atrasar a entrega.
