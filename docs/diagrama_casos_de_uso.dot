@@ -12,6 +12,8 @@ digraph casos_de_uso {
     uc3 [label="Atualizar tarefa"];
     uc4 [label="Mover tarefa entre colunas"];
     uc5 [label="Excluir tarefa"];
+    uc6 [label="Definir prioridade"];
+    uc7 [label="Filtrar por prioridade"];
   }
   membro -> uc1 [arrowhead=none];
   membro -> uc2 [arrowhead=none];
@@ -20,4 +22,8 @@ digraph casos_de_uso {
   gestor -> uc2 [arrowhead=none];
   gestor -> uc5 [arrowhead=none];
   gestor -> uc4 [arrowhead=none];
+  gestor -> uc7 [arrowhead=none];
+  membro -> uc7 [arrowhead=none];
+  uc6 -> uc1 [style=dashed, label="«extend»", fontsize=10];
+  uc6 -> uc3 [style=dashed, label="«extend»", fontsize=10];
 }

@@ -16,6 +16,7 @@ em um quadro Kanban, com código testado automaticamente a cada alteração.
 
 **Dentro do escopo**
 - CRUD de tarefas (criar, listar, atualizar e excluir).
+- *(Adicionado na mudança de escopo #1)* Prioridade das tarefas, com filtro e ordenação.
 - Três estados de fluxo: *A Fazer*, *Em Progresso* e *Concluído*.
 - Interface web com quadro Kanban e API REST em JSON.
 - Testes automatizados e integração contínua (GitHub Actions).
@@ -32,6 +33,30 @@ Abordagem **ágil híbrida (Scrumban)**:
 - **Iterações curtas** de planejamento e revisão (cerimônias leves do Scrum).
 - **Commits pequenos e semânticos** (`feat`, `fix`, `test`, `docs`, `ci`, `chore`).
 - **Integração contínua**: todo push executa lint e testes no GitHub Actions.
+
+## API REST
+
+| Método | Rota | Descrição |
+|--------|------|-----------|
+| GET | `/api/tasks?status=&prioridade=` | Lista tarefas (mais prioritárias primeiro) |
+| POST | `/api/tasks` | Cria tarefa (`titulo`, `descricao`, `status`, `prioridade`) |
+| GET | `/api/tasks/<id>` | Busca uma tarefa |
+| PUT | `/api/tasks/<id>` | Atualiza campos da tarefa |
+| DELETE | `/api/tasks/<id>` | Exclui a tarefa |
+
+## Estrutura do repositório
+
+```
+src/techflow/   código (models, repository, app, templates)
+tests/          testes automatizados (pytest)
+docs/           diagramas UML, Kanban e roteiro do vídeo
+.github/        workflow de integração contínua
+```
+
+## Diagramas UML
+
+![Casos de uso](docs/diagrama_casos_de_uso.png)
+![Classes](docs/diagrama_classes.png)
 
 ## Como executar
 
