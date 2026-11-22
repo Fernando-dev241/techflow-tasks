@@ -1,0 +1,15 @@
+digraph classes {
+  rankdir=LR; fontname="Helvetica"; labelloc=t;
+  label="Diagrama de Classes - TechFlow Tasks";
+  node [shape=record, fontname="Helvetica", style=filled, fillcolor="#FFFFFF"];
+  edge [fontname="Helvetica", fontsize=10];
+  api [label="{ApiTarefas (Flask)|+ listar()\l+ criar()\l+ obter(id)\l+ atualizar(id)\l+ remover(id)\l}"];
+  repo [label="{TaskRepository|- _tasks: dict\l- _next_id: int\l|+ create(dados): Task\l+ list(status): list\l+ get(id): Task\l+ update(id, dados): Task\l+ delete(id): None\l}"];
+  task [label="{Task|+ id: int\l+ titulo: str\l+ descricao: str\l+ status: str\l+ criada_em: str\l|+ to_dict(): dict\l}"];
+  verr [label="{ValidationError|«exception»\l}"];
+  nerr [label="{NotFoundError|«exception»\l}"];
+  api -> repo [label="usa", arrowhead=vee];
+  repo -> task [label="0..*", arrowtail=diamond, dir=back];
+  repo -> verr [style=dashed, arrowhead=vee, label="lança"];
+  repo -> nerr [style=dashed, arrowhead=vee, label="lança"];
+}
