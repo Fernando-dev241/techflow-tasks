@@ -49,7 +49,7 @@ Abordagem **ágil híbrida (Scrumban)**:
 ```
 src/techflow/   código (models, repository, app, templates)
 tests/          testes automatizados (pytest)
-docs/           diagramas UML, Kanban e roteiro do vídeo
+docs/           diagramas UML e Kanban
 .github/        workflow de integração contínua
 ```
 
