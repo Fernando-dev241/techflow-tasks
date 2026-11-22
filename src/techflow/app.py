@@ -16,7 +16,8 @@ def create_app():
 
     @app.get("/api/tasks")
     def listar():
-        return jsonify([t.to_dict() for t in repo.list(request.args.get("status"))])
+        tarefas = repo.list(request.args.get("status"), request.args.get("prioridade"))
+        return jsonify([t.to_dict() for t in tarefas])
 
     @app.post("/api/tasks")
     def criar():

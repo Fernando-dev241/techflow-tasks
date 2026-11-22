@@ -3,6 +3,7 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime
 
 STATUS_VALIDOS = ("A Fazer", "Em Progresso", "Concluído")
+PRIORIDADES = ("Baixa", "Média", "Alta", "Crítica")  # da menos para a mais urgente
 
 
 class ValidationError(ValueError):
@@ -25,6 +26,14 @@ def validar_status(status):
     return status
 
 
+def validar_prioridade(prioridade):
+    """Garante que a prioridade é um dos níveis previstos."""
+    if prioridade not in PRIORIDADES:
+        raise ValidationError(
+            f"Prioridade inválida. Use uma destas: {', '.join(PRIORIDADES)}.")
+    return prioridade
+
+
 def validar_dados(dados, parcial=False):
     """Valida e normaliza os dados de uma tarefa.
 
@@ -42,6 +51,8 @@ def validar_dados(dados, parcial=False):
         limpos["descricao"] = dados["descricao"].strip()
     if "status" in dados:
         limpos["status"] = validar_status(dados["status"])
+    if "prioridade" in dados:
+        limpos["prioridade"] = validar_prioridade(dados["prioridade"])
     return limpos
 
 
@@ -53,6 +64,7 @@ class Task:
     titulo: str
     descricao: str = ""
     status: str = "A Fazer"
+    prioridade: str = "Média"
     criada_em: str = field(default_factory=lambda: datetime.now().isoformat(timespec="seconds"))
 
     def to_dict(self):

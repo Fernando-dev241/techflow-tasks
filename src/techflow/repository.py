@@ -1,5 +1,5 @@
 """Repositório em memória para as tarefas (camada de persistência simples)."""
-from .models import Task, validar_dados, validar_status
+from .models import PRIORIDADES, Task, validar_dados, validar_prioridade, validar_status
 
 
 class NotFoundError(LookupError):
@@ -20,12 +20,21 @@ class TaskRepository:
         self._next_id += 1
         return task
 
-    def list(self, status=None):
-        """Lista as tarefas, opcionalmente filtrando por status."""
+    def list(self, status=None, prioridade=None):
+        """Lista as tarefas filtrando por status e/ou prioridade.
+
+        O resultado vem ordenado da prioridade mais alta para a mais baixa
+        e, em caso de empate, pela ordem de criação.
+        """
         if status is not None:
             validar_status(status)
-        tarefas = sorted(self._tasks.values(), key=lambda t: t.id)
-        return [t for t in tarefas if status is None or t.status == status]
+        if prioridade is not None:
+            validar_prioridade(prioridade)
+        tarefas = sorted(self._tasks.values(),
+                         key=lambda t: (-PRIORIDADES.index(t.prioridade), t.id))
+        return [t for t in tarefas
+                if (status is None or t.status == status)
+                and (prioridade is None or t.prioridade == prioridade)]
 
     def get(self, task_id):
         """Busca uma tarefa pelo id."""
