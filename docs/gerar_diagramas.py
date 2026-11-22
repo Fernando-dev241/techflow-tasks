@@ -22,50 +22,68 @@ def renderizar(nome, dot):
 
 
 def casos_de_uso():
-    extra_nos = ""
-    extra_arestas = ""
+    """Desenha o diagrama de casos de uso com posições fixas (matplotlib)."""
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    from matplotlib.patches import Ellipse, Rectangle
+
+    fig, ax = plt.subplots(figsize=(10, 6.2))
+    ax.set_xlim(0, 11)
+    ax.set_ylim(-0.3, 10.3)
+    ax.axis("off")
+    ax.set_title("Diagrama de Casos de Uso - TechFlow Tasks", fontsize=13)
+    ax.add_patch(Rectangle((3.0, 0.2), 7.7, 9.6, fill=False, linewidth=1.5))
+    ax.text(6.85, 9.4, "Sistema TechFlow Tasks", ha="center", fontsize=11, weight="bold")
+
+    cx = 5.6
+    casos = {"criar": ("Criar tarefa", 8.2), "atualizar": ("Atualizar tarefa", 6.8),
+             "mover": ("Mover tarefa entre colunas", 5.4),
+             "listar": ("Listar tarefas (quadro Kanban)", 4.0),
+             "excluir": ("Excluir tarefa", 2.6)}
     if PRIORIDADE:
-        extra_nos = (
-            '    uc6 [label="Definir prioridade"];\n'
-            '    uc7 [label="Filtrar por prioridade"];\n'
-        )
-        extra_arestas = (
-            '  gestor -> uc7 [arrowhead=none];\n'
-            '  membro -> uc7 [arrowhead=none];\n'
-            '  uc6 -> uc1 [style=dashed, label="«extend»", fontsize=10];\n'
-            '  uc6 -> uc3 [style=dashed, label="«extend»", fontsize=10];\n'
-        )
-    return f"""digraph casos_de_uso {{
-  rankdir=LR; fontname="Helvetica"; labelloc=t;
-  label="Diagrama de Casos de Uso - TechFlow Tasks";
-  node [fontname="Helvetica"]; edge [fontname="Helvetica"];
-  membro [label="«ator»\\nMembro da Equipe", shape=box, style="rounded,filled", fillcolor="#E3F2FD"];
-  gestor [label="«ator»\\nGestor de Projeto", shape=box, style="rounded,filled", fillcolor="#E3F2FD"];
-  subgraph cluster_sistema {{
-    label="Sistema TechFlow Tasks"; style=rounded; fontname="Helvetica";
-    node [shape=ellipse, style=filled, fillcolor="#FFF8E1"];
-    uc1 [label="Criar tarefa"];
-    uc2 [label="Listar tarefas (quadro Kanban)"];
-    uc3 [label="Atualizar tarefa"];
-    uc4 [label="Mover tarefa entre colunas"];
-    uc5 [label="Excluir tarefa"];
-{extra_nos}  }}
-  membro -> uc1 [arrowhead=none];
-  membro -> uc2 [arrowhead=none];
-  membro -> uc3 [arrowhead=none];
-  membro -> uc4 [arrowhead=none];
-  gestor -> uc2 [arrowhead=none];
-  gestor -> uc5 [arrowhead=none];
-  gestor -> uc4 [arrowhead=none];
-{extra_arestas}}}
-"""
+        casos["filtrar"] = ("Filtrar por prioridade", 1.2)
+    for nome, (rotulo, y) in casos.items():
+        ax.add_patch(Ellipse((cx, y), 3.6, 0.95, facecolor="#FFF8E1", edgecolor="black"))
+        ax.text(cx, y, rotulo, ha="center", va="center", fontsize=9)
+    if PRIORIDADE:
+        ax.add_patch(Ellipse((9.0, 7.5), 2.8, 0.95, facecolor="#FFF8E1", edgecolor="black"))
+        ax.text(9.0, 7.5, "Definir prioridade", ha="center", va="center", fontsize=9)
+        for alvo in ("criar", "atualizar"):
+            ax.annotate("", xy=(cx + 1.6, casos[alvo][1] + 0.1), xytext=(7.9, 7.5),
+                        arrowprops=dict(arrowstyle="->", linestyle="dashed"))
+        ax.text(8.0, 8.35, "«extend»", fontsize=8, ha="center")
+        ax.text(8.0, 6.55, "«extend»", fontsize=8, ha="center")
+
+    def ator(x, y, nome):
+        ax.add_patch(plt.Circle((x, y + 0.9), 0.25, fill=False))
+        ax.plot([x, x], [y + 0.65, y - 0.1], color="black")
+        ax.plot([x - 0.4, x + 0.4], [y + 0.4, y + 0.4], color="black")
+        ax.plot([x, x - 0.35], [y - 0.1, y - 0.7], color="black")
+        ax.plot([x, x + 0.35], [y - 0.1, y - 0.7], color="black")
+        ax.text(x, y - 1.1, nome, ha="center", fontsize=9)
+
+    membro, gestor = (1.2, 6.2), (1.2, 2.4)
+    ator(*membro, "Membro da Equipe")
+    ator(*gestor, "Gestor de Projeto")
+    ligacoes = {membro: ["criar", "atualizar", "mover", "listar"],
+                gestor: ["listar", "mover", "excluir"]}
+    if PRIORIDADE:
+        ligacoes[membro].append("filtrar")
+        ligacoes[gestor].append("filtrar")
+    for (x, y), alvos in ligacoes.items():
+        for alvo in alvos:
+            ax.plot([x + 0.4, cx - 1.8], [y + 0.4, casos[alvo][1]], color="black", linewidth=0.8)
+    fig.savefig(DOCS / "diagrama_casos_de_uso.png", dpi=130, bbox_inches="tight")
+    plt.close(fig)
+    print("Gerado: diagrama_casos_de_uso.png")
 
 
 def classes():
     campo_prioridade = "+ prioridade: str\\l" if PRIORIDADE else ""
     metodo_lista = "+ list(status, prioridade): list\\l" if PRIORIDADE else "+ list(status): list\\l"
     return f"""digraph classes {{
-  rankdir=LR; fontname="Helvetica"; labelloc=t;
+  rankdir=TB; nodesep=0.6; ranksep=0.7; fontname="Helvetica"; labelloc=t;
   label="Diagrama de Classes - TechFlow Tasks";
   node [shape=record, fontname="Helvetica", style=filled, fillcolor="#FFFFFF"];
   edge [fontname="Helvetica", fontsize=10];
@@ -83,5 +101,5 @@ def classes():
 
 
 if __name__ == "__main__":
-    renderizar("diagrama_casos_de_uso", casos_de_uso())
+    casos_de_uso()
     renderizar("diagrama_classes", classes())

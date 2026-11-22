@@ -1,5 +1,5 @@
 digraph classes {
-  rankdir=LR; fontname="Helvetica"; labelloc=t;
+  rankdir=TB; nodesep=0.6; ranksep=0.7; fontname="Helvetica"; labelloc=t;
   label="Diagrama de Classes - TechFlow Tasks";
   node [shape=record, fontname="Helvetica", style=filled, fillcolor="#FFFFFF"];
   edge [fontname="Helvetica", fontsize=10];
