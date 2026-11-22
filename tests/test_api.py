@@ -73,3 +73,33 @@ def test_excluir_tarefa_inexistente_retorna_404(client):
 
 def test_pagina_inicial_carrega(client):
     assert client.get("/").status_code == 200
+
+
+def test_criar_tarefa_com_prioridade(client):
+    resposta = criar(client, prioridade="Crítica")
+    assert resposta.get_json()["prioridade"] == "Crítica"
+
+
+def test_criar_com_prioridade_invalida_retorna_400(client):
+    assert criar(client, prioridade="Nenhuma").status_code == 400
+
+
+def test_listagem_ordenada_da_maior_para_a_menor_prioridade(client):
+    criar(client, titulo="baixa", prioridade="Baixa")
+    criar(client, titulo="critica", prioridade="Crítica")
+    criar(client, titulo="alta", prioridade="Alta")
+    titulos = [t["titulo"] for t in client.get("/api/tasks").get_json()]
+    assert titulos == ["critica", "alta", "baixa"]
+
+
+def test_filtrar_por_prioridade(client):
+    criar(client, titulo="a", prioridade="Alta")
+    criar(client, titulo="b", prioridade="Baixa")
+    filtradas = client.get("/api/tasks?prioridade=Alta").get_json()
+    assert [t["titulo"] for t in filtradas] == ["a"]
+
+
+def test_atualizar_prioridade(client):
+    criar(client)
+    resposta = client.put("/api/tasks/1", json={"prioridade": "Alta"})
+    assert resposta.get_json()["prioridade"] == "Alta"

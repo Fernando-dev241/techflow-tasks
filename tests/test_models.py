@@ -46,3 +46,14 @@ def test_task_to_dict_tem_valores_padrao():
     dados = Task(id=1, titulo="Teste").to_dict()
     assert dados["status"] == "A Fazer"
     assert dados["descricao"] == ""
+
+
+def test_prioridade_padrao_e_media():
+    assert Task(id=1, titulo="x").prioridade == "Média"
+
+
+def test_prioridade_valida_e_invalida():
+    from techflow.models import validar_prioridade
+    assert validar_prioridade("Crítica") == "Crítica"
+    with pytest.raises(ValidationError):
+        validar_prioridade("Urgentíssima")
