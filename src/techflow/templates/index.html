@@ -20,6 +20,10 @@
     .card { background: #fff; border-radius: 4px; padding: 10px; margin-bottom: 8px;
             box-shadow: 0 1px 2px rgba(0, 0, 0, .2); }
     .card p { margin: 4px 0 8px; font-size: .9rem; color: #5e6c84; }
+    .badge { font-size: .7rem; padding: 2px 6px; border-radius: 10px; margin-left: 6px;
+             background: #dfe1e6; }
+    .badge.Crítica { background: #ffbdad; }
+    .badge.Alta { background: #ffe2bd; }
     .acoes { display: flex; gap: 6px; flex-wrap: wrap; }
     @media (max-width: 700px) { .quadro { grid-template-columns: 1fr; } }
   </style>
@@ -30,8 +34,17 @@
     <form id="form-tarefa">
       <input id="titulo" placeholder="Título da tarefa" maxlength="100" required>
       <input id="descricao" placeholder="Descrição (opcional)">
+      <select id="prioridade" aria-label="Prioridade">
+        <option>Baixa</option><option selected>Média</option><option>Alta</option><option>Crítica</option>
+      </select>
       <button type="submit">Adicionar</button>
     </form>
+    <label>Filtrar por prioridade:
+      <select id="filtro" onchange="carregar().catch(mostrarErro)">
+        <option value="">Todas</option><option>Baixa</option><option>Média</option>
+        <option>Alta</option><option>Crítica</option>
+      </select>
+    </label>
     <div id="erro" role="alert"></div>
     <section class="quadro" id="quadro"></section>
   </main>
@@ -62,6 +75,10 @@
       card.className = "card";
       const titulo = document.createElement("strong");
       titulo.textContent = tarefa.titulo;
+      const badge = document.createElement("span");
+      badge.className = "badge " + tarefa.prioridade;
+      badge.textContent = tarefa.prioridade;
+      titulo.append(badge);
       const desc = document.createElement("p");
       desc.textContent = tarefa.descricao;
       const acoes = document.createElement("div");
@@ -80,7 +97,9 @@
     }
 
     async function carregar() {
-      const tarefas = await chamar("/api/tasks");
+      const filtro = document.getElementById("filtro").value;
+      const tarefas = await chamar(
+        "/api/tasks" + (filtro ? "?prioridade=" + encodeURIComponent(filtro) : ""));
       const quadro = document.getElementById("quadro");
       quadro.replaceChildren();
       COLUNAS.forEach(nome => {
@@ -102,7 +121,8 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             titulo: document.getElementById("titulo").value,
-            descricao: document.getElementById("descricao").value
+            descricao: document.getElementById("descricao").value,
+            prioridade: document.getElementById("prioridade").value
           })
         });
         e.target.reset();
